@@ -1,4 +1,7 @@
 // Archivo: utils.rs
+pub use self::utils::calculate_bounding_box;
+pub use self::utils::barycentric_coordinates;
+
 pub mod utils {
     use nalgebra_glm::Vec3;
 

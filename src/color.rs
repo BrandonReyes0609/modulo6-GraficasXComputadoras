@@ -15,6 +15,13 @@ impl Color {
     pub fn black() -> Self {
         Self { r: 0.0, g: 0.0, b: 0.0 }
     }
+    
+    pub fn to_hex(&self) -> u32 {
+        let r = (self.r * 255.0) as u32;
+        let g = (self.g * 255.0) as u32;
+        let b = (self.b * 255.0) as u32;
+        (r << 16) | (g << 8) | b
+    }
 }
 
 // Implementar multiplicación de Color por un escalar (f32)

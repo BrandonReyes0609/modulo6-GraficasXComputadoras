@@ -1,6 +1,5 @@
 // Archivo: vertex_shader.rs
 use crate::vertex::vertex::Vertex;
-use crate::uniforms::Uniforms;
 use nalgebra_glm::{Vec3, Vec4, Mat4};
 
 pub fn vertex_shader(vertex: &Vertex, transform_matrix: &Mat4, viewport_matrix: &Mat4) -> Vertex {
