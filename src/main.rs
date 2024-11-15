@@ -10,7 +10,7 @@ mod framebuffer;
 mod triangle;
 mod fragment;
 mod utils;
-mod fragment_shader; // Importa el nuevo fragment shader
+mod fragment_shader; // Importa el nuevo fragment shaders
 
 use crate::uniforms::{create_model_matrix, create_view_matrix, create_perspective_matrix, create_viewport_matrix, Uniforms};
 use crate::obj::Obj;
@@ -18,7 +18,7 @@ use crate::color::Color;
 use crate::vertex_shader::vertex_shader;
 use crate::camera::Camera;
 use crate::framebuffer::Framebuffer;
-use crate::fragment_shader::fragment_shader; // Importar el fragment shader
+use crate::fragment_shader::combined_blend_shader; // Importar el fragment shader
 use nalgebra_glm::Vec3;
 use pixels::{Pixels, SurfaceTexture};
 use winit::dpi::LogicalSize;
@@ -49,7 +49,7 @@ fn main() {
     let projection_matrix = create_perspective_matrix(width as f32, height as f32);
     let viewport_matrix = create_viewport_matrix(width as f32, height as f32);
 
-    let uniforms = Uniforms {
+    let mut uniforms = Uniforms {
         model_matrix,
         view_matrix,
         projection_matrix,
@@ -73,11 +73,11 @@ fn main() {
         match event {
             Event::WindowEvent {
                 event: WindowEvent::CloseRequested,
-                .. 
+                ..
             } => *control_flow = ControlFlow::Exit,
             Event::WindowEvent {
                 event: WindowEvent::KeyboardInput { input, .. },
-                .. 
+                ..
             } => {
                 if let Some(keycode) = input.virtual_keycode {
                     match keycode {
@@ -102,8 +102,8 @@ fn main() {
                         let x = fragment.position.x as usize;
                         let y = fragment.position.y as usize;
                         if x < framebuffer.width && y < framebuffer.height {
-                            // Aplicar el fragment shader
-                            let shaded_color = fragment_shader(&fragment, &uniforms);
+                            // Aplicar el fragment shader con un modo de mezcla
+                            let shaded_color = combined_blend_shader(&fragment, "screen");
                             framebuffer.set_current_color(shaded_color.to_hex());
                             framebuffer.point(x, y, fragment.depth);
                         }
@@ -119,6 +119,9 @@ fn main() {
                     eprintln!("Error rendering frame");
                     *control_flow = ControlFlow::Exit;
                 }
+
+                // Incrementar el tiempo para las animaciones
+                uniforms.time += 1;
             }
             Event::MainEventsCleared => {
                 window.request_redraw();

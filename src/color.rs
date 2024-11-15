@@ -23,6 +23,10 @@ impl Color {
         (r << 16) | (g << 8) | b
     }
 
+    pub fn is_black(&self) -> bool {
+        self.r == 0.0 && self.g == 0.0 && self.b == 0.0
+    }
+
     // Linear interpolation between two colors
     pub fn lerp(&self, other: &Color, t: f32) -> Self {
         let t = t.clamp(0.0, 1.0);
@@ -31,6 +35,43 @@ impl Color {
             g: self.g + (other.g - self.g) * t,
             b: self.b + (other.b - self.b) * t,
         }
+    }
+
+    // New blend mode methods
+    pub fn blend_normal(&self, blend: &Color) -> Color {
+        if blend.is_black() { *self } else { *blend }
+    }
+
+    pub fn blend_multiply(&self, blend: &Color) -> Color {
+        Color::new(
+            self.r * blend.r / 255.0,
+            self.g * blend.g / 255.0,
+            self.b * blend.b / 255.0,
+        )
+    }
+
+    pub fn blend_add(&self, blend: &Color) -> Color {
+        Color::new(
+            (self.r + blend.r).min(255.0),
+            (self.g + blend.g).min(255.0),
+            (self.b + blend.b).min(255.0),
+        )
+    }
+
+    pub fn blend_subtract(&self, blend: &Color) -> Color {
+        Color::new(
+            self.r - blend.r.max(0.0),
+            self.g - blend.g.max(0.0),
+            self.b - blend.b.max(0.0),
+        )
+    }
+
+    pub fn blend_screen(&self, blend: &Color) -> Color {
+        Color::new(
+            255.0 - ((255.0 - self.r) * (255.0 - blend.r) / 255.0),
+            255.0 - ((255.0 - self.g) * (255.0 - blend.g) / 255.0),
+            255.0 - ((255.0 - self.b) * (255.0 - blend.b) / 255.0),
+        )
     }
 }
 
