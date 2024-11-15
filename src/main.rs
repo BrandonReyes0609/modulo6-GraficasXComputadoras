@@ -54,6 +54,7 @@ fn main() {
         view_matrix,
         projection_matrix,
         viewport_matrix,
+        time: 0, // Inicializa el campo 'time'
     };
 
     // Precalcular la matriz de transformación completa fuera del vertex shader
@@ -72,11 +73,11 @@ fn main() {
         match event {
             Event::WindowEvent {
                 event: WindowEvent::CloseRequested,
-                ..
+                .. 
             } => *control_flow = ControlFlow::Exit,
             Event::WindowEvent {
                 event: WindowEvent::KeyboardInput { input, .. },
-                ..
+                .. 
             } => {
                 if let Some(keycode) = input.virtual_keycode {
                     match keycode {

@@ -1,6 +1,4 @@
-// Archivo: uniforms.rs
-
-use nalgebra_glm::{Mat4, Vec3, rotate_x, rotate_y, rotate_z, translate, scale, look_at, perspective};
+use nalgebra_glm::{Mat4, Vec3, translate, rotate_x, rotate_y, rotate_z, scale, look_at, perspective};
 use std::f32::consts::PI;
 
 pub struct Uniforms {
@@ -8,6 +6,7 @@ pub struct Uniforms {
     pub view_matrix: Mat4,
     pub projection_matrix: Mat4,
     pub viewport_matrix: Mat4,
+    pub time: u32, // Frame counter for animations
 }
 
 impl Uniforms {
@@ -17,10 +16,12 @@ impl Uniforms {
             view_matrix: Mat4::identity(),
             projection_matrix: Mat4::identity(),
             viewport_matrix: Mat4::identity(),
+            time: 0,
         }
     }
 }
 
+// Hacer las funciones públicas para que puedan ser usadas en otros módulos
 pub fn create_model_matrix(translation: Vec3, scale_factor: f32, rotation: Vec3) -> Mat4 {
     let mut model_matrix = Mat4::identity();
     model_matrix = translate(&model_matrix, &translation);
@@ -49,6 +50,6 @@ pub fn create_viewport_matrix(width: f32, height: f32) -> Mat4 {
         width / 2.0, 0.0, 0.0, width / 2.0,
         0.0, -height / 2.0, 0.0, height / 2.0,
         0.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0
+        0.0, 0.0, 0.0, 1.0,
     )
 }
