@@ -3,6 +3,30 @@ use crate::uniforms::Uniforms;
 use crate::color::Color;
 use std::f32::consts::PI;
 
+pub fn panda_shader(fragment: &Fragment, uniforms: &Uniforms) -> Color {
+    let zoom = 100.0; // Ajusta el nivel de zoom del ruido
+    let ox = 0.0;     // Offset en X
+    let oy = 0.0;     // Offset en Y
+    let x = fragment.vertex_position.x;
+    let y = fragment.vertex_position.y;
+
+    // Obtener el valor del ruido utilizando las coordenadas del vértice
+    let noise_value = uniforms.noise.get_noise_2d((x + ox) * zoom, (y + oy) * zoom);
+
+    // Definir el umbral para el color blanco o negro
+    let spot_threshold = 0.5;
+    let spot_color = Color::new(255.0, 255.0, 255.0); // Blanco
+    let base_color = Color::new(0.0, 0.0, 0.0);       // Negro
+
+    // Decidir el color en función del valor del ruido
+    let noise_color = if noise_value < spot_threshold {
+        spot_color
+    } else {
+        base_color
+    };
+
+    noise_color * fragment.intensity
+}
 // Static pattern shader
 fn static_pattern_shader(fragment: &Fragment) -> Color {
     let x = fragment.vertex_position.x;
@@ -70,3 +94,4 @@ pub fn combined_blend_shader(fragment: &Fragment, blend_mode: &str) -> Color {
 
     combined_color * fragment.intensity
 }
+

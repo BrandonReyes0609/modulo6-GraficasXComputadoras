@@ -6,7 +6,8 @@ edition = "2021"
 [dependencies]
 nalgebra = "0.28"
 nalgebra-glm = "0.19"
-pixels = "0.14.0"  # Usa la última versión de pixels
-winit = "0.27"     # Usa una versión compatible con pixels
-image = "0.23"     # Agrega esta línea para la dependencia de image
-rayon = "1.5"   # Para procesamiento paralelo
+pixels = "0.14.0"
+winit = "0.27"
+image = "0.23"
+rayon = "1.5"
+fastnoise-lite = "1.1.1" # Actualizado a la última versión disponible

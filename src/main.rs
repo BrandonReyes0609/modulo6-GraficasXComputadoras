@@ -18,6 +18,7 @@ use crate::color::Color;
 use crate::vertex_shader::vertex_shader;
 use crate::camera::Camera;
 use crate::framebuffer::Framebuffer;
+use crate::fragment_shader::panda_shader; // Importar el shader panda
 use crate::fragment_shader::combined_blend_shader; // Importar el fragment shader
 use nalgebra_glm::Vec3;
 use pixels::{Pixels, SurfaceTexture};
@@ -43,30 +44,18 @@ fn main() {
     // Crear la cámara
     let mut camera = Camera::new(Vec3::new(2.0, 1.0, -5.0), Vec3::new(0.0, 0.0, 0.0), Vec3::new(0.0, 1.0, 0.0));
 
-    // Crear las matrices de modelo, vista, proyección y viewport
-    let model_matrix = create_model_matrix(Vec3::new(0.0, 0.0, 0.0), 1.0, Vec3::new(0.0, 0.0, 0.0));
-    let view_matrix = create_view_matrix(camera.eye, camera.center, camera.up);
-    let projection_matrix = create_perspective_matrix(width as f32, height as f32);
-    let viewport_matrix = create_viewport_matrix(width as f32, height as f32);
-
-    let mut uniforms = Uniforms {
-        model_matrix,
-        view_matrix,
-        projection_matrix,
-        viewport_matrix,
-        time: 0, // Inicializa el campo 'time'
-    };
-
-    // Precalcular la matriz de transformación completa fuera del vertex shader
-    let transform_matrix = uniforms.projection_matrix * uniforms.view_matrix * uniforms.model_matrix;
+    // Crear los uniforms
+    let mut uniforms = Uniforms::new();
 
     // Cargar el modelo y aplicar las transformaciones
     let mut model = Obj::load("assets/squirtle.obj").expect("Failed to load OBJ file");
     for vertex in &mut model.vertices {
+        let transform_matrix = uniforms.projection_matrix * uniforms.view_matrix * uniforms.model_matrix;
         *vertex = vertex_shader(vertex, &transform_matrix, &uniforms.viewport_matrix);
     }
 
     let mut framebuffer = Framebuffer::new(width, height);
+
 
     event_loop.run(move |event, _, control_flow| {
         *control_flow = ControlFlow::Wait;
@@ -102,8 +91,8 @@ fn main() {
                         let x = fragment.position.x as usize;
                         let y = fragment.position.y as usize;
                         if x < framebuffer.width && y < framebuffer.height {
-                            // Aplicar el fragment shader con un modo de mezcla
-                            let shaded_color = combined_blend_shader(&fragment, "screen");
+                            // Aplicar el shader panda
+                            let shaded_color = panda_shader(&fragment, &uniforms);
                             framebuffer.set_current_color(shaded_color.to_hex());
                             framebuffer.point(x, y, fragment.depth);
                         }
@@ -120,7 +109,7 @@ fn main() {
                     *control_flow = ControlFlow::Exit;
                 }
 
-                // Incrementar el tiempo para las animaciones
+                // Incrementar el tiempo para animaciones
                 uniforms.time += 1;
             }
             Event::MainEventsCleared => {

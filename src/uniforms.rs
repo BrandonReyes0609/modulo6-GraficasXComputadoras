@@ -1,4 +1,5 @@
 use nalgebra_glm::{Mat4, Vec3, translate, rotate_x, rotate_y, rotate_z, scale, look_at, perspective};
+use fastnoise_lite::{FastNoiseLite, NoiseType};
 use std::f32::consts::PI;
 
 pub struct Uniforms {
@@ -6,7 +7,8 @@ pub struct Uniforms {
     pub view_matrix: Mat4,
     pub projection_matrix: Mat4,
     pub viewport_matrix: Mat4,
-    pub time: u32, // Frame counter for animations
+    pub time: u32,
+    pub noise: FastNoiseLite, // Añadimos el ruido a los uniforms
 }
 
 impl Uniforms {
@@ -17,8 +19,16 @@ impl Uniforms {
             projection_matrix: Mat4::identity(),
             viewport_matrix: Mat4::identity(),
             time: 0,
+            noise: create_noise(), // Inicializamos el ruido
         }
     }
+}
+
+pub fn create_noise() -> FastNoiseLite {
+    let mut noise = FastNoiseLite::new(); // Cambiado para la nueva versión, ya no se usa `with_seed`
+    noise.set_seed(Some(1337)); // Envuelto en `Some()`
+    noise.set_noise_type(Some(NoiseType::OpenSimplex2)); // Envuelto en `Some()`
+    noise
 }
 
 // Hacer las funciones públicas para que puedan ser usadas en otros módulos
