@@ -15,12 +15,22 @@ impl Color {
     pub fn black() -> Self {
         Self { r: 0.0, g: 0.0, b: 0.0 }
     }
-    
+
     pub fn to_hex(&self) -> u32 {
         let r = (self.r * 255.0) as u32;
         let g = (self.g * 255.0) as u32;
         let b = (self.b * 255.0) as u32;
         (r << 16) | (g << 8) | b
+    }
+
+    // Linear interpolation between two colors
+    pub fn lerp(&self, other: &Color, t: f32) -> Self {
+        let t = t.clamp(0.0, 1.0);
+        Color {
+            r: self.r + (other.r - self.r) * t,
+            g: self.g + (other.g - self.g) * t,
+            b: self.b + (other.b - self.b) * t,
+        }
     }
 }
 

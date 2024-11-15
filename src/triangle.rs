@@ -1,7 +1,8 @@
-use crate::fragment::Fragment;  // Cambiar a una importación directa
+// Archivo: triangle.rs
+use crate::fragment::Fragment;
 use crate::vertex::vertex::Vertex;
 use crate::color::Color;
-use nalgebra_glm::{Vec3, Vec2}; // Importar Vec2 aquí
+use nalgebra_glm::{Vec3, Vec2};
 use crate::utils::{calculate_bounding_box, barycentric_coordinates};
 
 // Función para rasterizar un triángulo
@@ -31,8 +32,11 @@ pub fn triangle(v1: &Vertex, v2: &Vertex, v3: &Vertex) -> Vec<Fragment> {
                 // Calcular la intensidad de la luz usando el producto punto
                 let intensity = normal.dot(&light_dir).max(0.0);
 
+                // Interpolación de posición del vértice
+                let vertex_position = v1.position * w1 + v2.position * w2 + v3.position * w3;
+
                 // Color base con iluminación
-                let base_color = Color::new(100.0, 100.0, 100.0); // Gris medio
+                let base_color = Color::new(1.0, 1.0, 1.0); // Blanco
 
                 // Interpolación de profundidad (z-index)
                 let depth = w1 * a.z + w2 * b.z + w3 * c.z;
@@ -40,6 +44,7 @@ pub fn triangle(v1: &Vertex, v2: &Vertex, v3: &Vertex) -> Vec<Fragment> {
                 // Crear el fragmento y agregarlo a la lista de fragmentos
                 fragments.push(Fragment::new(
                     Vec2::new(x as f32, y as f32),
+                    vertex_position,
                     base_color,
                     depth,
                     normal,
